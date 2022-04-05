@@ -1,30 +1,46 @@
+import math
 import variable as v
 from telebot import *
 
 bot = telebot.TeleBot('5163595458:AAFruP6yLGyLMCBKAg0YtEvqUu80nobUPUc')
 
-keyboard = types.InlineKeyboardMarkup()
-key_sinus = types.InlineKeyboardButton(text='синус', callback_data='sinus')
-key_cosine = types.InlineKeyboardButton(text='косинус', callback_data='cosine')
-keyboard.add(key_sinus, key_cosine)
+
+@bot.message_handler(commands=['start'])
+def start_message(message):
+    start = bot.send_message(message.chat.id, v.start)
+    bot.register_next_step_handler(start, next_step)
 
 
-@bot.message_handler(content_types=['text'])
-def get_message(message):
-    if message.text == '/start':
-        bot.send_message(message.from_user.id, v.start)
-    elif message.text == '/help':
-        bot.send_message(message.from_user.id, v.get_help, reply_markup=keyboard)
+@bot.message_handler(commands=['log'])
+def next_step(message):
+    msg = bot.send_message(message.chat.id, v.vinput)
+    bot.register_next_step_handler(msg, log_mane_shawty_damn)
+
+
+def log_mane_shawty_damn(message):
+    s = message.text
+    l = len(s)
+    nums = []
+    i = 0
+    while i < l:
+        s_int = ''
+        a = s[i]
+        while '0' <= a <= '9':
+            s_int += a
+            i += 1
+            if i < l:
+                a = s[i]
+            else:
+                break
+        i += 1
+        if s_int != '':
+            nums.append(int(s_int))
+    if len(nums) == 2:
+        log = math.log(int(nums[0]), int(nums[1]))
+        bot.send_message(message.chat.id, str(round(log, 3)))
     else:
-        bot.send_message(message.from_user.id, v.idk)
+        bot.send_message(message.chat.id, v.error)
 
 
-@bot.callback_query_handler(func=lambda call: True)
-def callback_worker(call):
-    if call.data == "синус":
-        bot.send_message(call.message.chat.id, 'пока не заполнено')
-    elif call.data == "косинус":
-        bot.send_message(call.message.chat.id, 'пока не заполнено')
-
-
-bot.polling(none_stop=True, interval=0)
+if __name__ == '__main__':
+    bot.polling(none_stop=True)
