@@ -4,117 +4,92 @@ from telebot import *
 
 bot = telebot.TeleBot('5163595458:AAFruP6yLGyLMCBKAg0YtEvqUu80nobUPUc')
 
-sin = open('math_functions_value/sin').readlines()
-cos = open('math_functions_value/cos').readlines()
-cos.reverse()
+sin = []
+cos = []
+tg = []
+for i in range(0, 2001):
+    degree = i / 360 * 2 * math.pi
+    sin.append(round(math.sin(degree), 4))
+    cos.append(round(math.cos(degree), 4))
+    tg.append(round(math.tan(degree), 4))
+
+
+def find_numbers(message):
+    serega = message.text
+    lena = len(serega)
+    nums = []
+    igor = 0
+    while igor < lena:
+        s_int = ''
+        a = serega[igor]
+        while '0' <= a <= '9':
+            s_int += a
+            igor += 1
+            if igor < lena:
+                a = serega[igor]
+            else:
+                break
+        igor += 1
+        if s_int != '':
+            nums.append(int(s_int))
+    return nums
 
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
     start = bot.send_message(message.chat.id, v.start)
-    bot.register_next_step_handler(start, next_step_log)
-    bot.register_next_step_handler(start, sin_func)
+    bot.register_next_step_handler(start, next_step)
 
 
-@bot.message_handler(commands=['log'])
-def next_step_log(message):
-    msg = bot.send_message(message.chat.id, v.loginput)
-    bot.register_next_step_handler(msg, log_mane_shawty_damn)
+@bot.message_handler(commands=['sin', 'cos', 'tg', 'log'])
+def next_step(message):
+    msg = bot.send_message(message.chat.id, 'Хорошо, наносекундочку...')
+    if message.text == '/sin':
+        bot.send_message(message.chat.id, v.trigoinput)
+        bot.register_next_step_handler(msg, sin_func)
+    if message.text == '/cos':
+        bot.send_message(message.chat.id, v.trigoinput)
+        bot.register_next_step_handler(msg, cos_func)
+    if message.text == '/tg':
+        bot.send_message(message.chat.id, v.trigoinput)
+        bot.register_next_step_handler(msg, tg_func)
+    if message.text == '/log':
+        bot.send_message(message.chat.id, v.loginput)
+        bot.register_next_step_handler(msg, log_mane_shawty_damn)
 
 
 def log_mane_shawty_damn(message):
-    s = message.text
-    l = len(s)
-    nums = []
-    i = 0
-    while i < l:
-        s_int = ''
-        a = s[i]
-        while '0' <= a <= '9':
-            s_int += a
-            i += 1
-            if i < l:
-                a = s[i]
-            else:
-                break
-        i += 1
-        if s_int != '':
-            nums.append(int(s_int))
-    if len(nums) == 2:
-        log = math.log(int(nums[0]), int(nums[1]))
+    if len(find_numbers(message)) == 2:
+        log = math.log(int(find_numbers(message)[0]), int(find_numbers(message)[1]))
         bot.send_message(message.chat.id, str(round(log, 3)))
     else:
         bot.send_message(message.chat.id, v.error)
 
 
-@bot.message_handler(commands=['sin', 'cos', 'tg', 'ctg'])
-def next_step_trigo(message):
-    msg = bot.send_message(message.chat.id, v.trigoinput)
-    if message.text == '/sin':
-        bot.register_next_step_handler(msg, sin_func)
-    if message.text == '/cos':
-        bot.register_next_step_handler(msg, cos_func)
-    if message.text == '/tg':
-        bot.register_next_step_handler(msg, tg_func)
-    if message.text == '/ctg':
-        bot.register_next_step_handler(msg, ctg_func)
-
-
 def sin_func(message):
-    s = message.text
-    l = len(s)
-    nums = []
-    i = 0
-    while i < l:
-        s_int = ''
-        a = s[i]
-        while '0' <= a <= '9':
-            s_int += a
-            i += 1
-            if i < l:
-                a = s[i]
-            else:
-                break
-        i += 1
-        if s_int != '':
-            nums.append(int(s_int))
-    if len(nums) == 1:
-        bot.send_message(message.chat.id, sin[int(nums[0])])
+    if len(find_numbers(message)) == 1:
+        bot.send_message(message.chat.id, str(sin[int(find_numbers(message)[0])]))
     else:
         bot.send_message(message.chat.id, v.error)
 
 
 def cos_func(message):
-    s = message.text
-    l = len(s)
-    nums = []
-    i = 0
-    while i < l:
-        s_int = ''
-        a = s[i]
-        while '0' <= a <= '9':
-            s_int += a
-            i += 1
-            if i < l:
-                a = s[i]
-            else:
-                break
-        i += 1
-        if s_int != '':
-            nums.append(int(s_int))
-    if len(nums) == 1:
-        bot.send_message(message.chat.id, cos[int(nums[0])])
+    if len(find_numbers(message)) == 1:
+        bot.send_message(message.chat.id, str(cos[int(find_numbers(message)[0])]))
     else:
         bot.send_message(message.chat.id, v.error)
 
 
 def tg_func(message):
-    pass
+    if len(find_numbers(message)) == 1:
+        bot.send_message(message.chat.id, str(tg[int(find_numbers(message)[0])]))
+    else:
+        bot.send_message(message.chat.id, v.error)
 
 
-def ctg_func(message):
-    pass
-
-
-if __name__ == '__main__':
-    bot.polling(none_stop=True)
+if __name__ == '__main__': 
+    try:
+       bot.polling(none_stop=True) 
+    except Exception as e:
+       print(e) 
+       time.sleep(15)
