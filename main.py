@@ -2,7 +2,7 @@ import math
 import variable as v
 from telebot import *
 
-bot = telebot.TeleBot('5163595458:AAFruP6yLGyLMCBKAg0YtEvqUu80nobUPUc')
+bot = telebot.TeleBot('5163595458:AAFruP6yLGyLMCBKAg0YtEvqUu80nobUPUc') # Выходи из акков и не пали ключи в паблик проектов
 
 sin = []
 cos = []
